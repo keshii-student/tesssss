@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsip's File System | Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+body{
+    background:#F8F9FA;
+    color:#1E293B;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    background:#1A3C6E;
+    color:white;
+    padding:24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:40px;
+    /* tanpa emoji */
+}
+
+.section-title{
+    font-size:12px;
+    text-transform:uppercase;
+    opacity:.7;
+    margin-bottom:12px;
+    letter-spacing:0.5px;
+}
+
+.menu{
+    list-style:none;
+    margin-bottom:32px;
+}
+
+.menu li{
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:background 0.2s;
+}
+
+.menu li.active{
+    background:#2563EB; /* warna solid, lebih jelas */
+}
+
+.menu li:hover:not(.active){
+    background:rgba(255,255,255,.1);
+}
+
+/* Profile */
+.profile{
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.profile h4{
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:4px;
+}
+
+.profile span{
+    font-size:12px;
+    opacity:.7;
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:32px;
+    overflow-x: auto;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+/* JUDUL DASHBOARD - tanpa gradient, polos */
+.page-title{
+    font-size:24px;
+    font-weight:700;
+    color:#1E293B;
+}
+
+.upload-btn{
+    background:#2563EB;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+}
+
+.upload-btn:hover{
+    background:#1D4ED8;
+}
+
+/* SEARCH & FILTER */
+.search-area{
+    display:flex;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+}
+
+.search-input{
+    flex:1;
+    min-width:200px;
+    padding:12px 16px;
+    border:1px solid #D1D5DB;
+    border-radius:10px;
+    background:white;
+    outline:none;
+    transition:0.2s;
+}
+
+.search-input:focus{
+    border-color:#2563EB;
+    box-shadow:0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.filter{
+    padding:12px;
+    border:1px solid #D1D5DB;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+    outline:none;
+}
+
+/* FOLDER CARDS - border tipis, tanpa shadow */
+.folder-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:16px;
+    margin-bottom:32px;
+}
+
+.folder-card{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    border:1px solid #E5E7EB;
+    transition:transform 0.2s, border-color 0.2s;
+    cursor:pointer;
+}
+
+.folder-card:hover{
+    transform:translateY(-2px);
+    border-color:#2563EB;
+}
+
+.folder-card h3{
+    margin-bottom:6px;
+    font-size:16px;
+    font-weight:600;
+}
+
+.folder-card p{
+    font-size:13px;
+    color:#64748B;
+}
+
+/* TABLE CARD - border tipis, tanpa shadow */
+.table-card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    border:1px solid #E5E7EB;
+    overflow-x:auto;
+}
+
+.table-card h2{
+    margin-bottom:16px;
+    font-size:20px;
+    font-weight:600;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:600px;
+}
+
+th{
+    text-align:left;
+    padding:14px;
+    font-size:13px;
+    color:#64748B;
+    font-weight:600;
+}
+
+td{
+    padding:14px;
+    border-top:1px solid #E5E7EB;
+    font-size:14px;
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.pdf{
+    background:#FEE2E2;
+    color:#DC2626;
+}
+
+.doc{
+    background:#DBEAFE;
+    color:#2563EB;
+}
+
+.xls{
+    background:#DCFCE7;
+    color:#16A34A;
+}
+
+.category{
+    background:#E0F2FE;
+    color:#0369A1;
+}
+
+.action-btn{
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:600;
+    transition:0.2s;
+    margin-right:6px;
+}
+
+.view{
+    background:#DBEAFE;
+    color:#2563EB;
+}
+
+.view:hover{
+    background:#BFDBFE;
+}
+
+.download{
+    background:#2563EB;
+    color:white;
+}
+
+.download:hover{
+    background:#1D4ED8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar{
+        width:220px;
+        padding:16px;
+    }
+    .main{
+        padding:20px;
+    }
+    .search-area{
+        flex-direction: column;
+    }
+    .filter{
+        width:100%;
+    }
+    .upload-btn{
+        width:100%;
+        text-align:center;
+    }
+    .topbar{
+        flex-direction: column;
+        align-items:stretch;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <aside class="sidebar">
+        <div>
+            <div class="logo">
+                Arsip's File System
+            </div>
+
+            <div class="section-title">Menu</div>
+            <ul class="menu">
+                <li class="active">Dashboard</li>
+                <li>Semua Folder</li>
+            </ul>
+
+            <div class="section-title">Folder</div>
+            <ul class="menu">
+                <li>Laporan</li>
+                <li>SOP</li>
+                <li>Surat Masuk</li>
+                <li>Inventaris</li>
+            </ul>
+
+            <div class="section-title">Aksi Cepat</div>
+            <ul class="menu">
+                <li>Upload Dokumen</li>
+                <!-- Pencarian Lanjutan sudah dihapus -->
+            </ul>
+        </div>
+
+        <!-- Profile sesuai role: Takeshi - Staff Admin -->
+        <div class="profile">
+            <h4>Takeshi</h4>
+            <span>Staff Admin</span>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <div class="topbar">
+            <h1 class="page-title">Dashboard</h1>
+            <button class="upload-btn">
+                + Upload Dokumen
+            </button>
+        </div>
+
+        <div class="search-area">
+            <input class="search-input" placeholder="Cari nama file atau folder..." />
+            <select class="filter">
+                <option>Jenis File: Semua</option>
+                <option>PDF</option>
+                <option>DOC</option>
+                <option>XLS</option>
+            </select>
+            <select class="filter">
+                <option>Kategori: Semua</option>
+                <option>Laporan</option>
+                <option>SOP</option>
+                <option>Surat Masuk</option>
+                <option>Inventaris</option>
+            </select>
+            <input type="date" class="filter" placeholder="Dari tanggal">
+            <input type="date" class="filter" placeholder="Sampai tanggal">
+        </div>
+
+        <div class="folder-grid">
+            <div class="folder-card">
+                <h3>Laporan</h3>
+                <p>12 File</p>
+            </div>
+            <div class="folder-card">
+                <h3>SOP</h3>
+                <p>8 File</p>
+            </div>
+            <div class="folder-card">
+                <h3>Surat Masuk</h3>
+                <p>15 File</p>
+            </div>
+            <div class="folder-card">
+                <h3>Inventaris</h3>
+                <p>5 File</p>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <h2>Dokumen Terbaru</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dokumen</th>
+                        <th>Kategori</th>
+                        <th>Tipe</th>
+                        <th>Tanggal</th>
+                        <th>Diupload Oleh</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Laporan Bulanan Maret 2026.pdf</td>
+                        <td><span class="badge category">Laporan</span></td>
+                        <td><span class="badge pdf">PDF</span></td>
+                        <td>12/05/2026</td>
+                        <td>Takeshi</td>
+                        <td>
+                            <button class="action-btn view">View</button>
+                            <button class="action-btn download">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>SOP Pengarsipan Digital.docx</td>
+                        <td><span class="badge category">SOP</span></td>
+                        <td><span class="badge doc">DOC</span></td>
+                        <td>10/05/2026</td>
+                        <td>Rina</td>
+                        <td>
+                            <button class="action-btn view">View</button>
+                            <button class="action-btn download">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Surat Masuk No. 45/2026.pdf</td>
+                        <td><span class="badge category">Surat Masuk</span></td>
+                        <td><span class="badge pdf">PDF</span></td>
+                        <td>08/05/2026</td>
+                        <td>Budi</td>
+                        <td>
+                            <button class="action-btn view">View</button>
+                            <button class="action-btn download">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Inventaris Barang Q1.xlsx</td>
+                        <td><span class="badge category">Inventaris</span></td>
+                        <td><span class="badge xls">XLS</span></td>
+                        <td>05/05/2026</td>
+                        <td>Siti</td>
+                        <td>
+                            <button class="action-btn view">View</button>
+                            <button class="action-btn download">Download</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>
